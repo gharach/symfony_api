@@ -20,5 +20,16 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\Filter\CompanyFilter:
+        tags: ['api_platform.filter']
+
+    App\DataProvider\UserCollectionDataProvider:
+        arguments:
+            $managerRegistry: '@doctrine'
+            $security: '@security.helper'
+        tags:
+            - { name: 'api_platform.state_provider' }
+
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

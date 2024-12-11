@@ -7,22 +7,32 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
+use App\Repository\UserRepository;
+use App\State\UserCompanyAssignmentProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
-//#[ApiResource(
-//    operations: [
-//        new Get(),          // For GET /api/users/{id}
-//        new GetCollection(),// For GET /api/users
-//        new Post(),         // For POST /api/users
-//        new Delete(),       // For DELETE /api/users/{id}
-//    ],
-//    normalizationContext: ['groups' => ['user:read']],
-//    denormalizationContext: ['groups' => ['user:write']]
-//)]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_COMPANY_ADMIN')",
+            filters: ['App\Filter\CompanyFilter']
+        ),
+        new Get(
+            security: "is_granted('ROLE_SUPER_ADMIN') or (is_granted('ROLE_COMPANY_ADMIN') and object.getCompany() == user.getCompany())",
+            securityMessage: "You do not have permission to access this user."
+        ),
+        new Post(
+            security: "is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_COMPANY_ADMIN')",
+            securityMessage: "You do not have permission to create a user.",
+            processor: UserCompanyAssignmentProcessor::class
+        ),
+        new Delete(security: "is_granted('ROLE_SUPER_ADMIN')")
+    ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
