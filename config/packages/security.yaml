@@ -2,13 +2,13 @@ security:
     enable_authenticator_manager: true
 
     password_hashers:
-        App\Entity\User: 'bcrypt'
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: name
+                property: email
 
     firewalls:
         dev:
@@ -20,7 +20,7 @@ security:
             stateless: true
             json_login:
                 check_path: /api/login_check
-                username_path: name
+                username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
@@ -30,5 +30,24 @@ security:
             stateless: true
             jwt: ~
 
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: [ROLE_COMPANY_ADMIN, ROLE_USER]
+        ROLE_COMPANY_ADMIN: [ROLE_USER]
+
     access_control:
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        # Ensure all API endpoints require authentication
+        - { path: ^/api/users$, roles: [ROLE_SUPER_ADMIN, ROLE_COMPANY_ADMIN], methods: [POST] }
+        - { path: ^/api/users/\d+$, roles: [ROLE_SUPER_ADMIN], methods: [DELETE] }
+
+        # Allow all authenticated users to access GET methods on users
+        - { path: ^/api/users, roles: IS_AUTHENTICATED_FULLY, methods: [GET] }
+
+        # Access control for company-related endpoints
+        - { path: ^/api/companies$, roles: [ROLE_SUPER_ADMIN], methods: [POST] }
+        - { path: ^/api/companies, roles: IS_AUTHENTICATED_FULLY, methods: [GET] }
+
+        # Fallback for any other API endpoint
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/me, roles: IS_AUTHENTICATED_FULLY }

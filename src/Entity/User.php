@@ -3,13 +3,26 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
-#[ApiResource]
+//#[ApiResource(
+//    operations: [
+//        new Get(),          // For GET /api/users/{id}
+//        new GetCollection(),// For GET /api/users
+//        new Post(),         // For POST /api/users
+//        new Delete(),       // For DELETE /api/users/{id}
+//    ],
+//    normalizationContext: ['groups' => ['user:read']],
+//    denormalizationContext: ['groups' => ['user:write']]
+//)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -33,7 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', unique: true)]
     #[Assert\NotBlank]
-    #[Assert\Email]
+    #[Assert\Email(message: "The email '{{ value }}' is not a valid email.")]
     private ?string $email = null;
 
     #[ORM\Column(type: 'string')]
@@ -42,6 +55,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Company $company = null;
+
+    // Getters and setters...
 
     public function getId(): ?int
     {
@@ -111,18 +126,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getSalt(): ?string
     {
-        return null; // Not needed with modern password hashing
+        return null;
     }
 
     public function eraseCredentials(): void
     {
-        // If you store any temporary sensitive data, clear it here
     }
 
     public function getUserIdentifier(): string
     {
         return $this->email;
     }
-
-
 }
