@@ -1,0 +1,34 @@
+security:
+    enable_authenticator_manager: true
+
+    password_hashers:
+        App\Entity\User: 'bcrypt'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: name
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            pattern: ^/api/login_check
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                username_path: name
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+
+    access_control:
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
