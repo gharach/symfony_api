@@ -35,19 +35,19 @@ security:
         ROLE_COMPANY_ADMIN: [ROLE_USER]
 
     access_control:
-        - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
-        # Ensure all API endpoints require authentication
-        - { path: ^/api/users$, roles: [ROLE_SUPER_ADMIN, ROLE_COMPANY_ADMIN], methods: [POST] }
-        - { path: ^/api/users/\d+$, roles: [ROLE_SUPER_ADMIN], methods: [DELETE] }
+    # Ensure all API endpoints require authentication
+    - { path: ^/api/users$, roles: [ROLE_SUPER_ADMIN, ROLE_COMPANY_ADMIN], methods: [POST] }
+    - { path: ^/api/users/\d+$, roles: [ROLE_SUPER_ADMIN], methods: [DELETE] }
 
-        # Allow all authenticated users to access GET methods on users
-        - { path: ^/api/users, roles: IS_AUTHENTICATED_FULLY, methods: [GET] }
+    # Allow all authenticated users to access GET methods on users
+    - { path: ^/api/users, roles: IS_AUTHENTICATED_FULLY, methods: [GET] }
 
-        # Access control for company-related endpoints
-        - { path: ^/api/companies$, roles: [ROLE_SUPER_ADMIN], methods: [POST] }
-        - { path: ^/api/companies, roles: IS_AUTHENTICATED_FULLY, methods: [GET] }
+    # Access control for company-related endpoints
+    - { path: ^/api/companies$, roles: [ROLE_SUPER_ADMIN], methods: [POST] }
+    - { path: ^/api/companies, roles: IS_AUTHENTICATED_FULLY, methods: [GET] }
 
-        # Fallback for any other API endpoint
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/me, roles: IS_AUTHENTICATED_FULLY }
+    # Fallback for any other API endpoint
+    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/api/me, roles: IS_AUTHENTICATED_FULLY }

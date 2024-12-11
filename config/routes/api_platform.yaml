@@ -4,3 +4,21 @@ api_platform:
     prefix: /api
 api_login_check:
     path: /api/login_check
+user_create:
+    path: /users
+    controller: App\Controller\UserController::createUser
+    methods: POST
+# Get all users route
+get_users:
+    path: /api/users
+    controller: App\Controller\UserController::getUsers
+    methods: GET
+# Get user by ID route
+get_user_by_id:
+    path: /api/users/{id}
+    controller: App\Controller\UserController::getUserById
+    methods: GET
+api_me:
+    path: /api/me
+    controller: App\Controller\UserController::me
+    methods: GET
