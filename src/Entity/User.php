@@ -13,16 +13,16 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
-//#[ApiResource(
-//    operations: [
-//        new Get(),          // For GET /api/users/{id}
-//        new GetCollection(),// For GET /api/users
-//        new Post(),         // For POST /api/users
-//        new Delete(),       // For DELETE /api/users/{id}
-//    ],
-//    normalizationContext: ['groups' => ['user:read']],
-//    denormalizationContext: ['groups' => ['user:write']]
-//)]
+#[ApiResource(
+    operations: [
+        new Get(),          // For GET /api/users/{id}
+        new GetCollection(),// For GET /api/users
+        new Post(),         // For POST /api/users
+        new Delete(),       // For DELETE /api/users/{id}
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
