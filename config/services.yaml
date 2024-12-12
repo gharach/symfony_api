@@ -19,16 +19,12 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-
-    App\Filter\CompanyFilter:
-        tags: ['api_platform.filter']
-
-    App\DataProvider\UserCollectionDataProvider:
-        arguments:
-            $managerRegistry: '@doctrine'
-            $security: '@security.helper'
+    App\Doctrine\Extension\UserRoleFilterExtension:
+        arguments: ['@security.helper']
         tags:
-            - { name: 'api_platform.state_provider' }
+            - { name: 'api_platform.doctrine.orm.query_extension.collection' }
+
+
 
 
     # add more service definitions when explicit configuration is needed
