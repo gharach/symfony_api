@@ -55,21 +55,36 @@ class UserApiTest extends ApiTestCase
         $client = static::createClient();
         $uniqueEmail = 'newtestuser' . random_int(1000, 9999) . '@company.com';
 
+        // Send the POST request to create a new user
         $response = $client->request('POST', '/api/users', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->companyAdminToken,
                 'Content-Type' => 'application/ld+json',
+                'Accept' => 'application/ld+json',
             ],
             'json' => [
                 'name' => 'Ali',
                 'email' => $uniqueEmail,
                 'role' => 'ROLE_USER',
                 'password' => 'P@assword123asdadsasd',
+                'company_id' => 74,
             ],
         ]);
 
+        // Check the response status code
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        // Decode the response content for further assertions
+        $responseContent = $response->toArray();
+
+        // Additional assertions to verify the response contains expected data
+        $this->assertArrayHasKey('id', $responseContent);
+        $this->assertSame($uniqueEmail, $responseContent['email']);
+        $this->assertSame('Ali', $responseContent['name']);
+        $this->assertSame('ROLE_USER', $responseContent['role']);
+
     }
+
 
 
     public function testCompanyAdminCanViewOnlyCompanyUsers(): void
@@ -80,15 +95,27 @@ class UserApiTest extends ApiTestCase
             'headers' => ['Authorization' => 'Bearer ' . $this->companyAdminToken],
         ]);
 
+
         $this->assertResponseIsSuccessful();
 
         $users = $response->toArray();
-        foreach ($users as $user) {
-            $this->assertArrayHasKey('company', $user);
-            $this->assertEquals(74, $user['company']['id'], 'Company Admin should only see users from their company.');
-            // you should set the company id
+
+        // Ensure $users is an array
+        $this->assertIsArray($users, 'The response should be an array.');
+
+        $this->assertArrayHasKey('hydra:member', $users, 'The response should have a hydra:member key.');
+
+        $members = $users['hydra:member'];
+
+        $this->assertIsArray($members, 'The hydra:member key should contain an array of users.');
+
+        foreach ($members as $user) {
+            $this->assertArrayHasKey('company', $user, 'Each user should have a company key.');
+            $this->assertEquals('/api/companies/69', $user['company'], 'Company Admin should only see users from their company.');
         }
     }
+
+
 //    public function testCompanyAdminCanViewOnlyCompanyUsers(): void
 //    {
 //        $client = static::createClient();
