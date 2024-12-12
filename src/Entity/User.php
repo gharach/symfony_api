@@ -60,6 +60,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column(type: 'string')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 8, minMessage: "The password must be at least {{ limit }} characters long.")]
+    #[Assert\Regex(
+        pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+        message: 'The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
+    )]
     private ?string $password = null;
 
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
