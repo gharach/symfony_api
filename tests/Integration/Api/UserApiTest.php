@@ -54,19 +54,23 @@ class UserApiTest extends ApiTestCase
     {
         $client = static::createClient();
         $uniqueEmail = 'newtestuser' . random_int(1000, 9999) . '@company.com';
+
         $response = $client->request('POST', '/api/users', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->companyAdminToken,
+                'Content-Type' => 'application/ld+json',
+            ],
             'json' => [
                 'name' => 'Ali',
                 'email' => $uniqueEmail,
                 'role' => 'ROLE_USER',
-                'password' => 'password123',
-                'company_id' => 1,
+                'password' => 'P@assword123asdadsasd',
             ],
-            'headers' => ['Authorization' => 'Bearer ' . $this->companyAdminToken],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
     }
+
 
     public function testCompanyAdminCanViewOnlyCompanyUsers(): void
     {
@@ -81,7 +85,7 @@ class UserApiTest extends ApiTestCase
         $users = $response->toArray();
         foreach ($users as $user) {
             $this->assertArrayHasKey('company', $user);
-            $this->assertEquals(69, $user['company']['id'], 'Company Admin should only see users from their company.');
+            $this->assertEquals(74, $user['company']['id'], 'Company Admin should only see users from their company.');
             // you should set the company id
         }
     }

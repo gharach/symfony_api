@@ -34,6 +34,7 @@ class UserCompanyAssignmentProcessor implements ProcessorInterface
             if (in_array('ROLE_COMPANY_ADMIN', $currentUser->getRoles(), true)) {
                 $company = $currentUser->getCompany();
                 $data->setCompany($company);
+                $data->setRole('ROLE_USER');
             }
 
             if ($data->getPassword()) {
